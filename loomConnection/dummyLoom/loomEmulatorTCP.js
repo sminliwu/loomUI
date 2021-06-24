@@ -1,4 +1,4 @@
-// Run this from the command line with `node testTCPServer.js`
+// Run this from the command line with `node loomEmulatorTCP.js`
 // echo what is sent from the Processing sketch
 
 var net = require('net');
@@ -16,7 +16,8 @@ class LoomEmulator {
 			this.socket = socket;
 			socket.write('Echo server with some loom functions\r\n');
 			//socket.pipe(socket);
-			socket.on('data', function(data) {
+
+			socket.on('data', (data) => {
 				console.log("received data length: " + data.length);
 				if (data.length == 3) {
 					if (data[2] == 0x04) {
@@ -51,12 +52,20 @@ class LoomEmulator {
 				    socket.write(data + "\n roger that");
 				}
 			});
-			socket.on('connect', function(data) {
+
+			socket.on('connect', (data) => {
 				console.log("new connection from " + socket.remoteAddress + ":" + socket.remotePort);
 			});
+
 			socket.on('error', (e) => {
 				console.log(e.code);
 			});
+
+			socket.on('close', (err) => {
+			if (err) {
+				console.log("socket closed due to transmission error");
+			}
+		});
 		});
 	}
 
@@ -69,19 +78,19 @@ class LoomEmulator {
 	}
 }
 
-jeanLuc = new LoomEmulator()
+locutus = new LoomEmulator()
 
-jeanLuc.server.on('listening', function(data) {
+locutus.server.on('listening', function(data) {
 	console.log("listening at ", jeanLuc.server.address());
 });
 
-jeanLuc.server.on('connection', function(data) {
+locutus.server.on('connection', function(data) {
 	console.log("new connection");
 });
 
-jeanLuc.server.on('error', (e) => {
+locutus.server.on('error', (e) => {
 	console.log(e.code);
 });
 
 console.log("starting");
-jeanLuc.server.listen(1337, '127.0.0.1');
+locutus.server.listen(1337, '127.0.0.1');
